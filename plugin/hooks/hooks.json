@@ -1,0 +1,51 @@
+{
+  "description": "claude-progress-memory hooks — deterministic capture + context injection (no model, no auth)",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "export PATH=\"$($SHELL -lc 'echo $PATH' 2>/dev/null):$PATH\"; node \"${CLAUDE_PLUGIN_ROOT:-$PWD}/scripts/sessionstart.js\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "export PATH=\"$($SHELL -lc 'echo $PATH' 2>/dev/null):$PATH\"; node \"${CLAUDE_PLUGIN_ROOT:-$PWD}/scripts/userpromptsubmit.js\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit|MultiEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "export PATH=\"$($SHELL -lc 'echo $PATH' 2>/dev/null):$PATH\"; node \"${CLAUDE_PLUGIN_ROOT:-$PWD}/scripts/posttooluse.js\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "export PATH=\"$($SHELL -lc 'echo $PATH' 2>/dev/null):$PATH\"; node \"${CLAUDE_PLUGIN_ROOT:-$PWD}/scripts/stop.js\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

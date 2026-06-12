@@ -1,0 +1,15 @@
+{
+  "name": "local-progress-memory",
+  "owner": { "name": "liangchengni" },
+  "metadata": {
+    "description": "Local marketplace hosting the claude-progress-memory plugin"
+  },
+  "plugins": [
+    {
+      "name": "claude-progress-memory",
+      "source": "./plugin",
+      "version": "0.1.0",
+      "description": "轻量跨会话项目进度记忆:确定性 hook 捕获 + 当前会话生成小结,本地 JSONL,零鉴权、零 API、零额外运行时。"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "claude-progress-memory-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Lean cross-session progress memory plugin (JSONL, zero-auth, Node-only, no dependencies).",
+  "engines": { "node": ">=18.0.0" }
+}

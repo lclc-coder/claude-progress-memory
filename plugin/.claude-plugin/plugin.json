@@ -1,0 +1,8 @@
+{
+  "name": "claude-progress-memory",
+  "version": "0.1.0",
+  "description": "Lean cross-session project progress memory. Deterministic hook capture + current-session summaries, local JSONL, zero auth, Node-only.",
+  "author": { "name": "liangchengni" },
+  "license": "MIT",
+  "keywords": ["memory", "progress", "cross-session", "jsonl", "local", "zero-auth"]
+}

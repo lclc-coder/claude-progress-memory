@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "progress-memory": {
+      "type": "stdio",
+      "command": "sh",
+      "args": [
+        "-c",
+        "_C=\"${CLAUDE_CONFIG_DIR:-$HOME/.claude}\"; _E=\"${CLAUDE_PLUGIN_ROOT:-}\"; _P=\"\"; for _c in \"$_E\" $(ls -dt \"$_C/plugins/cache/local-progress-memory/claude-progress-memory\"/*/ 2>/dev/null) \"$HOME/claude-progress-memory/plugin\"; do { [ -n \"$_c\" ] && [ -f \"$_c/scripts/mcp-server.js\" ]; } && { _P=\"$_c\"; break; }; done; [ -n \"$_P\" ] || { echo \"progress-memory: mcp-server.js not found\" >&2; exit 1; }; export PATH=\"$($SHELL -lc 'echo $PATH' 2>/dev/null):$PATH\"; exec node \"$_P/scripts/mcp-server.js\""
+      ]
+    }
+  }
+}
