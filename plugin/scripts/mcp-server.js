@@ -1,6 +1,8 @@
 // mcp-server.js — zero-dependency MCP stdio server (hand-rolled JSON-RPC 2.0).
 // Newline-delimited JSON messages on stdin/stdout. No deps, no network, no auth.
 import readline from 'node:readline';
+import path from 'node:path';
+import os from 'node:os';
 import {
   projectSlug, sanitizeSlug, readActiveSlug,
   saveObservation, saveSummary,
@@ -13,9 +15,20 @@ console.log = (...a) => console.error(...a); // protect stdout: it is the protoc
 const PROC_SESSION = 'mcp-' + Math.random().toString(36).slice(2, 10);
 const SERVER_INFO = { name: 'progress-memory', version: '0.1.0' };
 
+// Prefer this server process's own cwd: each session spawns its own MCP server
+// whose cwd is pinned to the session's start directory and never drifts with
+// in-session `cd`. The global .active pointer is overwritten last-writer-wins
+// by every concurrent session's hooks, so it is only a fallback for cwds that
+// carry no project signal ($HOME, filesystem root, or an unresolvable slug —
+// projectSlug() never returns empty, hence the explicit guards).
 function resolveSlug(arg) {
   if (arg && String(arg).trim()) return sanitizeSlug(arg);
-  return readActiveSlug() || projectSlug(process.cwd());
+  const cwd = path.resolve(process.cwd());
+  if (cwd !== os.homedir() && cwd !== path.parse(cwd).root) {
+    const slug = projectSlug(cwd);
+    if (slug !== 'unknown-project') return slug;
+  }
+  return readActiveSlug() || projectSlug(cwd);
 }
 const ok = (text) => ({ content: [{ type: 'text', text: typeof text === 'string' ? text : JSON.stringify(text, null, 2) }] });
 const fail = (text) => ({ content: [{ type: 'text', text }], isError: true });

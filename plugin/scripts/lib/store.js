@@ -30,9 +30,12 @@ export function sanitizeSlug(name) {
   return s || 'unknown-project';
 }
 
-// Walk up from cwd to the nearest project anchor (.git or CLAUDE.md), so that
-// working inside a subdirectory (e.g. `cd sub && ...`, which persists the cwd in
-// some harnesses) does NOT spawn a new project bucket. Never climbs above $HOME.
+// Walk up from cwd to the nearest project anchor (.git, CLAUDE.md, or a
+// .claude/ directory), so that working inside a subdirectory (e.g. `cd sub &&
+// ...`, which persists the cwd in some harnesses) does NOT spawn a new project
+// bucket. Never climbs above $HOME. The .claude anchor must skip $HOME itself:
+// ~/.claude always exists, and matching it would collapse every anchor-less
+// project into a single home-directory bucket.
 function findProjectRoot(dir) {
   let d;
   try { d = path.resolve(dir); } catch { return null; }
@@ -40,6 +43,9 @@ function findProjectRoot(dir) {
   for (let i = 0; i < 50; i++) {
     for (const m of ['.git', 'CLAUDE.md']) {
       try { if (fs.existsSync(path.join(d, m))) return d; } catch {}
+    }
+    if (d !== home) {
+      try { if (fs.statSync(path.join(d, '.claude')).isDirectory()) return d; } catch {}
     }
     const parent = path.dirname(d);
     if (!parent || parent === d || d === home) break;
