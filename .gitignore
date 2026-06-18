@@ -1,0 +1,14 @@
+# Local Claude Code settings (machine-specific permissions, not for distribution)
+.claude/settings.local.json
+
+# OS / editor cruft
+.DS_Store
+*.swp
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Runtime memory data (this plugin writes to ~/.claude-progress-memory, never inside the repo,
+# but guard against accidental local test output)
+*.jsonl

@@ -6,6 +6,21 @@
 - 自动记住每个项目"做到哪了、改了什么、定了什么",并在新会话开头自动注入,跨会话延续。
 - **零终端、零 API key、零额外运行时、零鉴权**:不依赖任何会过期的登录 token —— 记忆由你当前已登录的会话生成,捕获由 hook 完成,存本地文件。
 
+## 安装
+
+要求:本机已装 **Node ≥ 18**(插件脚本零依赖,纯 Node 运行)。
+
+在 Claude Code 里依次执行:
+
+```
+/plugin marketplace add liangchengni/claude-progress-memory
+/plugin install claude-progress-memory@local-progress-memory
+```
+
+第一条把本仓库注册为 marketplace(其名为 `local-progress-memory`),第二条安装插件本体。安装后重启 Claude Code 即可生效;之后每个项目都会自动跨会话续记。
+
+> 也可手动:`git clone` 本仓库后,用 `/plugin marketplace add <本地路径>` 注册再安装。
+
 ## 架构(一句话)
 确定性 hook 捕获(每轮改了哪些文件/命令) + 当前会话经 MCP 工具 `memory_save` 写"有质量的小结" + 本地 JSONL 存储 + SessionStart 注入精简索引(渐进披露)。无后台守护进程、无 Bun/Python、无网络调用。
 
