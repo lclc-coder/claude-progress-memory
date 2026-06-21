@@ -1,6 +1,6 @@
 # claude-progress-memory
 
-轻量、跨会话的**项目进度记忆**插件,用于 Claude Desktop / Claude Code。
+轻量、跨会话的**项目进度记忆**插件,用于 Claude Desktop / Claude Code,**也支持 OpenAI Codex CLI**(同一 git 仓库内两个 agent 共享同一份记忆)。
 
 ## 它解决什么
 - 自动记住每个项目"做到哪了、改了什么、定了什么",并在新会话开头自动注入,跨会话延续。
@@ -21,6 +21,16 @@
 
 > 也可手动:`git clone` 本仓库后,用 `/plugin marketplace add <本地路径>` 注册再安装。
 
+## 在 Codex 里使用
+
+同一套记忆也能挂到 **OpenAI Codex CLI**,且与 Claude Code 在同一 git 仓库内**共享同一份记忆**。clone 本仓库后:
+
+```bash
+bash codex/install.sh
+```
+
+脚本会(幂等地)注册 MCP 服务器、安装技能、追加常驻指令,**不改动 `plugin/`、不影响 Claude Code 用法**。细节、手动安装与两端差异见 [`codex/README.md`](codex/README.md)。
+
 ## 架构(一句话)
 确定性 hook 捕获(每轮改了哪些文件/命令) + 当前会话经 MCP 工具 `memory_save` 写"有质量的小结" + 本地 JSONL 存储 + SessionStart 注入精简索引(渐进披露)。无后台守护进程、无 Bun/Python、无网络调用。
 
@@ -28,17 +38,23 @@
 ```
 claude-progress-memory/
 ├── .claude-plugin/marketplace.json     # 本地 marketplace(注册用)
-└── plugin/                             # 插件本体
-    ├── .claude-plugin/plugin.json
-    ├── .mcp.json                       # stdio MCP: scripts/mcp-server.js
-    ├── hooks/hooks.json                # SessionStart / UserPromptSubmit / PostToolUse / Stop
-    ├── scripts/                        # 纯 Node、零依赖
-    │   ├── lib/store.js                # JSONL 存储、项目分库、去重、模式配置
-    │   ├── lib/render.js               # 精简索引渲染
-    │   ├── sessionstart.js userpromptsubmit.js posttooluse.js stop.js
-    │   └── mcp-server.js               # 手写 JSON-RPC MCP 服务器
-    ├── skills/progress-memory/SKILL.md # 常驻指引(何时/如何记)
-    └── commands/记进度.md 记忆模式.md   # 斜杠命令
+├── plugin/                             # 插件本体(Claude Code)
+│   ├── .claude-plugin/plugin.json
+│   ├── .mcp.json                       # stdio MCP: scripts/mcp-server.js
+│   ├── hooks/hooks.json                # SessionStart / UserPromptSubmit / PostToolUse / Stop
+│   ├── scripts/                        # 纯 Node、零依赖
+│   │   ├── lib/store.js                # JSONL 存储、项目分库、去重、模式配置
+│   │   ├── lib/render.js               # 精简索引渲染
+│   │   ├── sessionstart.js userpromptsubmit.js posttooluse.js stop.js
+│   │   └── mcp-server.js               # 手写 JSON-RPC MCP 服务器(两端共用)
+│   ├── skills/progress-memory/SKILL.md # 常驻指引(何时/如何记)
+│   └── commands/记进度.md 记忆模式.md   # 斜杠命令
+└── codex/                              # Codex 适配(纯新增,复用上面的 mcp-server.js)
+    ├── install.sh                      # 幂等安装:注册 MCP + 装技能 + 追加 AGENTS.md
+    ├── skills/progress-memory/SKILL.md # Codex 技能(含"会话开始先回忆")
+    ├── AGENTS.md                       # 可追加进 ~/.codex/AGENTS.md 的常驻指令片段
+    ├── config.toml.snippet             # 手动注册 MCP 的配置片段
+    └── README.md                       # Codex 安装/用法/与 Claude Code 差异
 ```
 
 ## 数据

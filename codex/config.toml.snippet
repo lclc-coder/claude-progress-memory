@@ -1,0 +1,17 @@
+# progress-memory · 手动注册 MCP 服务器(给不想用 install.sh 的人)
+#
+# 推荐做法是用官方命令一行注册(它会把下面这段写进 ~/.codex/config.toml):
+#
+#     codex mcp add progress-memory -- node "/绝对路径/claude-progress-memory/plugin/scripts/mcp-server.js"
+#
+# 或者,手动把下面这一段粘贴进 ~/.codex/config.toml(把路径换成你 clone 仓库的真实绝对路径):
+
+[mcp_servers.progress-memory]
+type = "stdio"
+command = "node"
+args = ["/ABSOLUTE/PATH/TO/claude-progress-memory/plugin/scripts/mcp-server.js"]
+
+# 可选:把记忆数据目录指到别处(默认 ~/.claude-progress-memory)。
+# 想和 Claude Code 共享就保持默认、不要设这个。
+# [mcp_servers.progress-memory.env]
+# CLAUDE_PROGRESS_MEMORY_DIR = "/your/custom/dir"
